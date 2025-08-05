@@ -1,22 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Post
-from .forms import PostForm
+from .models import Post, Comment
+from .forms import PostForm, CommentForm
 from django.http import JsonResponse
 
 
 @login_required
 def home_view(request):
-    return render(request, 'social/home.html')
+    # Show latest social posts on homepage
+    posts = Post.objects.all().order_by('-created_at')[:10]
+    return render(request, 'social/home.html', {'posts': posts})
 
 @login_required
 def feed(request):
-    # Get posts from user and their accepted connections only
-    connections = request.user.connections_sent.filter(accepted=True).values_list('to_user_id', flat=True)
-    posts = Post.objects.filter(author__in=connections)
-    user_posts = Post.objects.filter(author=request.user)
-    posts = (posts | user_posts).distinct()
+    posts = Post.objects.all()
     search = request.GET.get('search', '').strip()
     author = request.GET.get('author', '').strip()
     if search:
@@ -24,9 +22,24 @@ def feed(request):
     if author:
         posts = posts.filter(author__username=author)
     posts = posts.order_by('-created_at')
-    # For filter dropdown
     authors = Post.objects.values_list('author__username', flat=True).distinct()
-    return render(request, 'social/feed.html', {'posts': posts, 'authors': authors})
+
+    # Handle comment submission
+    if request.method == 'POST' and 'comment_post_id' in request.POST:
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            post_id = request.POST.get('comment_post_id')
+            post = get_object_or_404(Post, id=post_id)
+            comment = comment_form.save(commit=False)
+            comment.author = request.user
+            comment.post = post
+            comment.save()
+            messages.success(request, 'Comment added.')
+            return redirect('social:feed')
+    else:
+        comment_form = CommentForm()
+
+    return render(request, 'social/feed.html', {'posts': posts, 'authors': authors, 'comment_form': comment_form})
 
 @login_required
 def create_post(request):
@@ -54,6 +67,6 @@ def post_like_toggle(request, post_id):
     else:
         post.likes.add(user)
         liked = True
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'liked': liked, 'total_likes': post.total_likes})
     return redirect('social:feed')

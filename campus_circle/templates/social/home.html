@@ -1,6 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<h1>Welcome to Campus Circle</h1>
-<p>This is the home page.</p>
+<div class="card" style="max-width: 800px; margin: 2rem auto;">
+  <h1 style="color: #6366f1; font-size: 2rem; font-weight: bold; margin-bottom: 1.2rem;">Welcome to Campus Circle</h1>
+  <h2 style="color: #06b6d4; font-size: 1.3rem; margin-bottom: 1rem;">Latest Social Feed</h2>
+  <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+    {% for post in posts %}
+      <div style="background: #f8fafc; border-radius: 1rem; box-shadow: 0 2px 8px rgba(99,102,241,0.07); padding: 1.5rem;">
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; gap: 0.7rem;">
+          <a href="{% url 'users:profile' post.author.username %}" style="font-weight: 600; color: #06b6d4; margin-right: 0.2rem; text-decoration: underline;">{{ post.author.username }}</a>
+          <span style="color: #64748b; font-size: 0.98rem;">({{ post.author.get_role_display }})</span>
+          {% if post.author.is_alumni_verified or post.author.is_superuser %}
+            <span title="Verified" style="color: #22c55e; font-size: 1.1rem; margin-left: 0.2rem;">&#10004;</span>
+          {% endif %}
+          <span style="color: #64748b; font-size: 0.98rem; margin-left: auto;">{{ post.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div style="margin-bottom: 0.7rem; color: #1e293b;">{{ post.content|linebreaks }}</div>
+        {% if post.image %}
+          <img src="{{ post.image.url }}" alt="Post image" style="max-width: 320px; border-radius: 0.5rem; margin-bottom: 0.7rem;">
+        {% endif %}
+        {% if post.pdf %}
+          <p><a href="{{ post.pdf.url }}" style="color: #6366f1;">Download attached PDF</a></p>
+        {% endif %}
+        <div style="display: flex; align-items: center; gap: 1.2rem; margin-top: 0.7rem;">
+          <span style="color: #6366f1; font-weight: 600;">&#x1F44D; {{ post.total_likes }}</span>
+        </div>
+      </div>
+    {% empty %}
+      <div style="color: #888; font-size: 1.1rem;">No posts found.</div>
+    {% endfor %}
+  </div>
+</div>
 {% endblock %}

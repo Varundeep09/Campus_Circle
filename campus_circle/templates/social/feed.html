@@ -19,9 +19,13 @@
   <div style="display: flex; flex-direction: column; gap: 1.5rem;">
     {% for post in posts %}
       <div style="background: #f8fafc; border-radius: 1rem; box-shadow: 0 2px 8px rgba(99,102,241,0.07); padding: 1.5rem;">
-        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-          <span style="font-weight: 600; color: #06b6d4; margin-right: 0.7rem;">{{ post.author.username }}</span>
-          <span style="color: #64748b; font-size: 0.98rem;">{{ post.created_at|date:"M d, Y H:i" }}</span>
+        <div style="display: flex; align-items: center; margin-bottom: 0.5rem; gap: 0.7rem;">
+          <a href="{% url 'users:profile' post.author.username %}" style="font-weight: 600; color: #06b6d4; margin-right: 0.2rem; text-decoration: underline;">{{ post.author.username }}</a>
+          <span style="color: #64748b; font-size: 0.98rem;">({{ post.author.get_role_display }})</span>
+          {% if post.author.is_alumni_verified or post.author.is_superuser %}
+            <span title="Verified" style="color: #22c55e; font-size: 1.1rem; margin-left: 0.2rem;">&#10004;</span>
+          {% endif %}
+          <span style="color: #64748b; font-size: 0.98rem; margin-left: auto;">{{ post.created_at|date:"M d, Y H:i" }}</span>
         </div>
         <div style="margin-bottom: 0.7rem; color: #1e293b;">{{ post.content|linebreaks }}</div>
         {% if post.image %}
@@ -39,6 +43,33 @@
             {% else %}
               <button type="submit" class="btn" style="background: #06b6d4; color: #fff; font-size: 0.95rem; padding: 0.4rem 1.1rem;">Like</button>
             {% endif %}
+          </form>
+        </div>
+        <!-- Comments section -->
+        <div style="margin-top: 1.2rem;">
+          <h4 style="color: #6366f1; font-size: 1.1rem; margin-bottom: 0.5rem;">Comments</h4>
+          {% if post.comments.all %}
+            <ul style="list-style:none; padding:0; margin:0;">
+              {% for comment in post.comments.all %}
+                <li style="margin-bottom:0.5rem;">
+                  <a href="{% url 'users:profile' comment.author.username %}" style="font-weight: 600; color: #06b6d4; text-decoration: underline;">{{ comment.author.username }}</a>
+                  <span style="color: #64748b; font-size: 0.95rem;">({{ comment.author.get_role_display }})</span>
+                  {% if comment.author.is_alumni_verified or comment.author.is_superuser %}
+                    <span title="Verified" style="color: #22c55e; font-size: 1rem;">&#10004;</span>
+                  {% endif %}
+                  <span style="color: #64748b; font-size: 0.92rem; margin-left:0.5rem;">{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                  <div style="margin-left:1.2rem; color:#1e293b;">{{ comment.content|linebreaks }}</div>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div style="color: #888; font-size: 1rem;">No comments yet.</div>
+          {% endif %}
+          <form method="post" style="margin-top:0.7rem; display:flex; gap:0.7rem;">
+            {% csrf_token %}
+            <input type="hidden" name="comment_post_id" value="{{ post.id }}">
+            {{ comment_form.content }}
+            <button type="submit" class="btn" style="padding:0.5rem 1.2rem; font-size:1rem;">Comment</button>
           </form>
         </div>
       </div>

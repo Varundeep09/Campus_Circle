@@ -1,23 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}{{ job.title }}{% endblock %}
-
-<h1>{{ job.title }}</h1>
-<p><strong>Company:</strong> {{ job.company }}</p>
-<p><strong>Location:</strong> {{ job.location }}</p>
-<p><strong>Job Type:</strong> {{ job.get_job_type_display }}</p>
-<p><strong>Description:</strong></p>
-<p>{{ job.description|linebreaks }}</p>
-<p><strong>Application Deadline:</strong> {{ job.application_deadline }}</p>
-
-{% if user == job.posted_by %}
-  <p>
-    <a href="{% url 'jobs:job_post_edit' job.id %}">Edit</a> |
-    <a href="{% url 'jobs:job_post_delete' job.id %}">Delete</a>
-  </p>
-{% endif %}
-
-<p><a href="{% url 'jobs:job_list' %}">Back to Job Board</a></p>
-{% endblock %}
 {% block content %}
 <div class="card" style="max-width: 700px; margin: 2rem auto;">
   <h1 style="color: #6366f1; font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">{{ job.title }}</h1>
