@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="card login-card" style="max-width: 350px; margin: 2rem auto; background: #f7fafc; box-shadow: 0 4px 24px rgba(60,60,100,0.10);">
+  <h1 style="color: #3b3b4f; text-align: center; font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem;">Login</h1>
+  <form method="post" novalidate style="display: flex; flex-direction: column; gap: 1.2rem;">
+    {% csrf_token %}
+    <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+      <label for="id_username" style="color: #4f46e5; font-weight: 600;">Username</label>
+      <input type="text" name="username" autofocus required id="id_username" style="padding: 0.7rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; font-size: 1rem;" />
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+      <label for="id_password" style="color: #4f46e5; font-weight: 600;">Password</label>
+      <input type="password" name="password" required id="id_password" style="padding: 0.7rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; font-size: 1rem;" />
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+      <label for="id_role" style="color: #4f46e5; font-weight: 600;">Login as</label>
+      <select name="role" id="id_role" required style="padding: 0.7rem 1rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; background: #fff; font-size: 1rem;">
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+        <option value="alumni">Alumni</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button type="submit" style="background: linear-gradient(90deg, #4f46e5 0%, #06b6d4 100%); color: #fff; border: none; border-radius: 0.5rem; padding: 0.8rem 0; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: background 0.3s;">Login</button>
+  </form>
+  <p style="text-align: center; margin-top: 1.2rem; color: #555;">Don't have an account? <a href="{% url 'users:register' %}" style="color: #06b6d4; font-weight: 600; text-decoration: underline;">Register here</a></p>
+</div>
+{% endblock %}

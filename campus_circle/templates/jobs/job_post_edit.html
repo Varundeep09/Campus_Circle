@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Edit Job{% endblock %}
+
+{% block content %}
+<h1>Edit Job - {{ job_post.title }}</h1>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Update Job</button>
+</form>
+
+<p><a href="{% url 'jobs:job_detail' job_post.id %}">Cancel</a></p>
+{% endblock %}

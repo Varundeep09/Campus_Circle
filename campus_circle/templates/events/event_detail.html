@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ event.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ event.title }}</h1>
+<p><strong>Description:</strong></p>
+<p>{{ event.description|linebreaks }}</p>
+<p><strong>Date and Time:</strong> {{ event.event_date|date:"M d, Y H:i" }}</p>
+<p><strong>Location:</strong> {{ event.location }}</p>
+<p><strong>Organizer:</strong> {{ event.organizer.username if event.organizer else "N/A" }}</p>
+<p><strong>Attendees:</strong> {{ event.attendees.count }}</p>
+
+<form action="{% url 'events:event_attend_toggle' event.id %}" method="post">
+  {% csrf_token %}
+  {% if is_attending %}
+    <button type="submit">Leave Event</button>
+  {% else %}
+    <button type="submit">Attend Event</button>
+  {% endif %}
+</form>
+
+<p><a href="{% url 'events:event_list' %}">Back to Events</a></p>
+{% endblock %}

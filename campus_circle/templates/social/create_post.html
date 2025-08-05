@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Create Post{% endblock %}
+
+{% block content %}
+<h1>Create a New Post</h1>
+
+<form method="post" enctype="multipart/form-data" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Post</button>
+</form>
+
+<p><a href="{% url 'social:feed' %}">Back to Feed</a></p>
+{% endblock %}

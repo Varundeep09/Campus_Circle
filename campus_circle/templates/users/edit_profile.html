@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 2rem auto;">
+  <h1 style="color: #6366f1; font-size: 2rem; font-weight: bold; margin-bottom: 1.2rem;">Edit Profile</h1>
+  <form method="post" enctype="multipart/form-data" novalidate style="display: flex; flex-direction: column; gap: 1.2rem;">
+    {% csrf_token %}
+    {% if form.profile_image.value %}
+      <div style="text-align: center;">
+        <img id="profileImagePreview" src="{{ form.profile_image.value.url }}" alt="Profile Image" style="width: 120px; height: 120px; object-fit: cover; border-radius: 50%; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(6,182,212,0.10);">
+      </div>
+    {% endif %}
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.bio.label_tag }}
+      {{ form.bio|add_class:'form-control' }}
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.college.label_tag }}
+      {{ form.college|add_class:'form-control' }}
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.graduation_year.label_tag }}
+      {{ form.graduation_year|add_class:'form-control' }}
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.profile_image.label_tag }}
+      {{ form.profile_image|add_class:'form-control' }}
+      <small style="color: #64748b;">Upload a square image for best results.</small>
+      <div id="cropperContainer" style="display:none; margin-top:1rem;"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.resume.label_tag }}
+      {{ form.resume|add_class:'form-control' }}
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.linkedin_url.label_tag }}
+      {{ form.linkedin_url|add_class:'form-control' }}
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+      {{ form.github_url.label_tag }}
+      {{ form.github_url|add_class:'form-control' }}
+    </div>
+    <button type="submit" class="btn" style="font-size: 1rem; padding: 0.7rem 2rem; margin-top: 1rem;">Save Changes</button>
+  </form>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+<script>
+  // JS stub for cropping (to be completed with backend support)
+  const input = document.querySelector('input[name="profile_image"]');
+  const preview = document.getElementById('profileImagePreview');
+  let cropper;
+  if(input) {
+    input.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          if(preview) preview.src = ev.target.result;
+          if(window.Cropper) {
+            if(cropper) cropper.destroy();
+            cropper = new Cropper(preview, { aspectRatio: 1 });
+          }
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+  }
+</script>
+{% endblock %}

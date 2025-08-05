@@ -1,0 +1,25 @@
+:root {
+  --primary: #6366f1;
+  --secondary: #f472b6;
+  --accent: #06b6d4;
+  --bg-gradient: linear-gradient(90deg, #6366f1 0%, #f472b6 100%);
+}
+
+body {
+  background: var(--bg-gradient);
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+  transition: background 0.5s;
+}
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 8px 32px rgba(99,102,241,0.2);
+}

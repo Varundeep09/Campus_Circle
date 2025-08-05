@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 2rem auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+    <h1 style="color: #06b6d4; font-size: 2rem; font-weight: bold;">Welcome, {{ user.username }} <span style="font-size:1.1rem; color:#64748b;">(Teacher)</span></h1>
+    <div style="display: flex; gap: 1rem;">
+      <a href="{% url 'jobs:job_post_create' %}" class="btn" style="font-size: 1rem; padding: 0.6rem 1.3rem; background: linear-gradient(90deg, #6366f1 0%, #06b6d4 100%);">+ Post Job</a>
+      <a href="{% url 'events:event_create' %}" class="btn" style="font-size: 1rem; padding: 0.6rem 1.3rem; background: linear-gradient(90deg, #06b6d4 0%, #6366f1 100%);">+ Create Event</a>
+    </div>
+  </div>
+  <section style="margin-bottom: 2rem;">
+    <h2 style="color: #4f46e5; font-size: 1.3rem; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.5rem;">&#x1F4C5; Your Organized Events</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+      {% for event in events %}
+        <div style="background: #f8fafc; border-radius: 0.7rem; box-shadow: 0 2px 8px rgba(6,182,212,0.07); padding: 1rem 1.2rem; min-width: 260px;">
+          <b style="color: #06b6d4;">{{ event.title }}</b> <span style="color:#64748b;">@ {{ event.location }}</span><br>
+          <small style="color: #888;">{{ event.event_date|date:"M d, Y H:i" }}</small>
+        </div>
+      {% empty %}
+        <div style="color: #888; font-size: 1.1rem;">No events organized yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+  <section>
+    <h2 style="color: #6366f1; font-size: 1.3rem; margin-bottom: 0.7rem; display: flex; align-items: center; gap: 0.5rem;">&#x1F4AC; Latest Social Feed Posts</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+      {% for post in posts %}
+        <div style="background: #f8fafc; border-radius: 0.7rem; box-shadow: 0 2px 8px rgba(99,102,241,0.07); padding: 1rem 1.2rem; min-width: 260px;">
+          <b style="color: #6366f1;">{{ post.author.username }}</b>: {{ post.content|truncatechars:100 }}<br>
+          <small style="color: #888;">{{ post.created_at|date:"M d, Y H:i" }}</small>
+        </div>
+      {% empty %}
+        <div style="color: #888; font-size: 1.1rem;">No posts yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

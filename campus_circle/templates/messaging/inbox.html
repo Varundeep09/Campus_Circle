@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Inbox{% endblock %}
+
+{% block content %}
+<h1>Inbox</h1>
+
+<ul>
+  {% for thread in threads %}
+    <li>
+      <a href="{% url 'messaging:thread' thread.id %}">
+        Conversation with 
+        {% for participant in thread.participants.all %}
+          {% if participant != user %}
+            {{ participant.username }}{% if not forloop.last %}, {% endif %}
+          {% endif %}
+        {% endfor %}
+      </a> - Last message: {{ thread.messages.latest('created_at').created_at|date:"M d, Y H:i" }}
+    </li>
+  {% empty %}
+    <li>No messages.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'messaging:new_thread' %}">Start New Conversation</a>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Manage Alumni Verifications{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 2rem auto;">
+  <h1 style="color: #e11d48; font-size: 1.5rem; font-weight: bold; margin-bottom: 1.2rem;">Pending Alumni Verification Requests</h1>
+  {% if requests %}
+    <table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#f1f5f9; color:#6366f1;">
+          <th style="padding:0.7rem; text-align:left;">User</th>
+          <th style="padding:0.7rem; text-align:left;">Requested At</th>
+          <th style="padding:0.7rem; text-align:left;">Reason</th>
+          <th style="padding:0.7rem; text-align:left;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for req in requests %}
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:0.7rem;">{{ req.user.username }}</td>
+          <td style="padding:0.7rem;">{{ req.created_at|date:"M d, Y H:i" }}</td>
+          <td style="padding:0.7rem;">{{ req.reason|default:'-' }}</td>
+          <td style="padding:0.7rem;">
+            <a href="{% url 'users:process_alumni_verification' req.id 'approve' %}" class="btn" style="background:#22c55e; color:white; margin-right:0.5rem;">Approve</a>
+            <a href="{% url 'users:process_alumni_verification' req.id 'deny' %}" class="btn" style="background:#e11d48; color:white;">Deny</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div style="color: #888; font-size: 1.1rem;">No pending requests.</div>
+  {% endif %}
+</div>
+{% endblock %}

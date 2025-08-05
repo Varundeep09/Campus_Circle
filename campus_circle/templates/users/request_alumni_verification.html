@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Request Alumni Verification{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto;">
+  <h1 style="color: #6366f1; font-size: 1.5rem; font-weight: bold; margin-bottom: 1.2rem;">Request Alumni Verification</h1>
+  <form method="post" style="display: flex; flex-direction: column; gap: 1.2rem;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn" style="font-size: 1rem; padding: 0.7rem 2rem;">Submit Request</button>
+  </form>
+</div>
+{% endblock %}

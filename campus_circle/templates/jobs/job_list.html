@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Job Board{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 2rem auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h1 style="color: #6366f1; font-size: 2rem; font-weight: bold;">Job Board</h1>
+    {% if user.is_authenticated and user.role in "alumni teacher admin" %}
+      <a href="{% url 'jobs:job_post_create' %}" class="btn" style="font-size: 1rem; padding: 0.6rem 1.5rem;">+ Post a Job</a>
+    {% endif %}
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for job in jobs %}
+      <div style="background: #f8fafc; border-radius: 1rem; box-shadow: 0 2px 8px rgba(99,102,241,0.07); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <a href="{% url 'jobs:job_detail' job.id %}" style="color: #06b6d4; font-size: 1.2rem; font-weight: 600; text-decoration: none; margin-bottom: 0.5rem;">{{ job.title }}</a>
+        <div style="color: #64748b; font-size: 1rem; margin-bottom: 0.7rem;">{{ job.company }} &bull; {{ job.location }}<br>Deadline: {{ job.application_deadline }}</div>
+        <a href="{% url 'jobs:job_detail' job.id %}" class="btn" style="background: #06b6d4; color: #fff; font-size: 0.95rem; padding: 0.5rem 1.2rem; align-self: flex-start;">View Details</a>
+      </div>
+    {% empty %}
+      <div style="color: #888; font-size: 1.1rem;">No job postings available.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
