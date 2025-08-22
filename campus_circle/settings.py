@@ -19,7 +19,7 @@ import os
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-me-in-production')
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.railway.app', '.render.com', '.pythonanywhere.com', 'campus-circle-658a.onrender.com']
 
 INSTALLED_APPS = [
     # Django apps
