@@ -12,7 +12,7 @@ class Command(BaseCommand):
                 username='admin',
                 email='admin@example.com',
                 password='Varun@123',
-                user_type='admin'
+                role='admin'
             )
             self.stdout.write('Superuser created: admin/Varun@123')
         else:

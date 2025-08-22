@@ -14,9 +14,7 @@ if not User.objects.filter(username='admin').exists():
         username='admin',
         email='admin@example.com', 
         password='Varun@123',
-        user_type='admin',
-        is_staff=True,
-        is_superuser=True
+        role='admin'
     )
     print('Superuser created: admin/Varun@123')
 else:
