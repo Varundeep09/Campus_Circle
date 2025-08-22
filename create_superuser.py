@@ -18,6 +18,6 @@ if not User.objects.filter(username='admin').exists():
         is_staff=True,
         is_superuser=True
     )
-    print('Superuser created: admin/admin123')
+    print('Superuser created: admin/Varun@123')
 else:
     print('Superuser already exists')
