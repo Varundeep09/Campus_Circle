@@ -7,17 +7,13 @@ class Command(BaseCommand):
     help = 'Create superuser automatically'
 
     def handle(self, *args, **options):
-        # Delete existing admin user if exists
-        User.objects.filter(username='admin').delete()
-        
-        # Create new superuser
-        user = User.objects.create_user(
-            username='admin',
-            email='admin@example.com',
-            password='Varun@123',
-            role='admin'
-        )
-        user.is_staff = True
-        user.is_superuser = True
-        user.save()
-        self.stdout.write('Superuser created: admin/Varun@123')
+        # Promote admin user to superuser
+        try:
+            user = User.objects.get(username='admin')
+            user.is_staff = True
+            user.is_superuser = True
+            user.role = 'admin'  # Change from student to admin
+            user.save()
+            self.stdout.write(f'User {user.username} promoted to superuser with admin role')
+        except User.DoesNotExist:
+            self.stdout.write('Admin user not found')

@@ -9,17 +9,13 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Delete existing admin user if exists
-User.objects.filter(username='admin').delete()
-
-# Create new superuser
-user = User.objects.create_user(
-    username='admin',
-    email='admin@example.com',
-    password='Varun@12345',
-    role='admin'
-)
-user.is_staff = True
-user.is_superuser = True
-user.save()
-print('Superuser created: admin/Varun@12345')
+# Promote admin user to superuser
+try:
+    user = User.objects.get(username='admin')
+    user.is_staff = True
+    user.is_superuser = True
+    user.role = 'admin'  # Change from student to admin
+    user.save()
+    print(f'User {user.username} promoted to superuser with admin role')
+except User.DoesNotExist:
+    print('Admin user not found')
