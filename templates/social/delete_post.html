@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Delete Post{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto; text-align: center;">
+  <h1 style="color: #e11d48; font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">Delete Post</h1>
+  <p>Are you sure you want to delete this post?</p>
+  <form method="post" style="margin-top: 1.5rem;">
+    {% csrf_token %}
+    <button type="submit" class="btn" style="background: #e11d48; color: #fff;">Delete</button>
+    <a href="{% url 'social:feed' %}" class="btn" style="background: #6366f1; color: #fff; margin-left: 1rem;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

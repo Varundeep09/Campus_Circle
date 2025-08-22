@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Job Board{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem;">
+  <!-- Header -->
+  <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%); border: 2px solid rgba(99, 102, 241, 0.2);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="color: var(--primary); font-size: 2.5rem; font-weight: 800; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 1rem;">
+          <i class="fas fa-briefcase" style="color: var(--accent);"></i>
+          Job Board
+        </h1>
+        <p style="color: var(--secondary); font-size: 1.1rem; margin: 0;">Discover amazing career opportunities</p>
+      </div>
+      {% if user.is_authenticated and user.get_role_display in 'Alumni,Teacher,Admin' %}
+        <a href="{% url 'jobs:job_post_create' %}" class="btn" style="padding: 1rem 2rem; font-size: 1.1rem;">
+          <i class="fas fa-plus"></i> Post a Job
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+      <div style="position: relative; flex: 1; min-width: 250px;">
+        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+        <input type="text" name="search" value="{{ request.GET.search|default:'' }}" placeholder="Search jobs, companies..." style="width: 100%; padding: 0.875rem 1rem 0.875rem 3rem; border: 2px solid rgba(99, 102, 241, 0.1); border-radius: 1rem; font-size: 1rem; background: rgba(99, 102, 241, 0.05); transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='var(--accent)'; this.style.background='#fff'" onblur="this.style.borderColor='rgba(99, 102, 241, 0.1)'; this.style.background='rgba(99, 102, 241, 0.05)'">
+      </div>
+      <div style="position: relative;">
+        <i class="fas fa-map-marker-alt" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+        <select name="location" style="padding: 0.875rem 1rem 0.875rem 3rem; border: 2px solid rgba(99, 102, 241, 0.1); border-radius: 1rem; font-size: 1rem; background: rgba(99, 102, 241, 0.05); min-width: 180px; outline: none;">
+          <option value="">All Locations</option>
+          {% for location in locations %}
+            <option value="{{ location }}" {% if request.GET.location == location %}selected{% endif %}>{{ location }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn" style="padding: 0.875rem 1.5rem;"><i class="fas fa-filter"></i> Filter</button>
+    </form>
+  </div>
+
+  <!-- Job Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2); border-radius: 1.5rem; padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; font-weight: 800; color: var(--success); margin-bottom: 0.5rem;">{{ jobs.count }}</div>
+      <div style="color: var(--primary); font-weight: 600;">Active Jobs</div>
+    </div>
+    <div style="background: rgba(99, 102, 241, 0.1); border: 2px solid rgba(99, 102, 241, 0.2); border-radius: 1.5rem; padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem;">{{ locations.count }}</div>
+      <div style="color: var(--primary); font-weight: 600;">Locations</div>
+    </div>
+    <div style="background: rgba(245, 158, 11, 0.1); border: 2px solid rgba(245, 158, 11, 0.2); border-radius: 1.5rem; padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; font-weight: 800; color: var(--warning); margin-bottom: 0.5rem;">24</div>
+      <div style="color: var(--primary); font-weight: 600;">New This Week</div>
+    </div>
+  </div>
+
+  <!-- Job Listings -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 2rem;">
+    {% for job in jobs %}
+      <div class="card" style="padding: 0; overflow: hidden; transition: all 0.3s; border: 2px solid rgba(99, 102, 241, 0.1);" onmouseover="this.style.transform='translateY(-4px)'; this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='translateY(0)'; this.style.borderColor='rgba(99, 102, 241, 0.1)'">
+        <!-- Job Header -->
+        <div style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%); padding: 1.5rem; border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
+          <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+            <div style="width: 60px; height: 60px; background: var(--gradient); border-radius: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
+              <i class="fas fa-briefcase" style="color: white; font-size: 1.5rem;"></i>
+            </div>
+            <div style="flex: 1;">
+              <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin: 0 0 0.25rem 0;">
+                <a href="{% url 'jobs:job_detail' job.id %}" style="color: inherit; text-decoration: none;">{{ job.title }}</a>
+              </h3>
+              <div style="color: var(--secondary); font-weight: 600;">{{ job.company }}</div>
+            </div>
+          </div>
+          
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(16, 185, 129, 0.1); color: var(--success); padding: 0.5rem 1rem; border-radius: 1rem; font-size: 0.9rem; font-weight: 600;">
+              <i class="fas fa-map-marker-alt"></i>
+              {{ job.location }}
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 0.5rem 1rem; border-radius: 1rem; font-size: 0.9rem; font-weight: 600;">
+              <i class="fas fa-clock"></i>
+              {{ job.get_job_type_display }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Job Content -->
+        <div style="padding: 1.5rem;">
+          <div style="color: var(--primary); font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">{{ job.description|truncatechars:120 }}</div>
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--secondary); font-size: 0.9rem;">
+              <i class="fas fa-calendar-alt"></i>
+              <span>Deadline: {{ job.application_deadline|date:"M d, Y" }}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--secondary); font-size: 0.9rem;">
+              <i class="fas fa-clock"></i>
+              <span>{{ job.created_at|timesince }} ago</span>
+            </div>
+          </div>
+          
+          <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'jobs:job_detail' job.id %}" class="btn" style="flex: 1; justify-content: center; background: var(--accent);">
+              <i class="fas fa-eye"></i> View Details
+            </a>
+            {% if user.is_authenticated and user.role == 'student' %}
+              <a href="{% url 'jobs:job_detail' job.id %}#apply" class="btn" style="background: var(--success); padding: 0.875rem 1.5rem;">
+                <i class="fas fa-paper-plane"></i> Apply
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--secondary);">
+        <i class="fas fa-briefcase" style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.3;"></i>
+        <h3 style="color: var(--primary); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">No Jobs Available</h3>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">There are currently no job postings matching your criteria.</p>
+        {% if user.is_authenticated and user.get_role_display in 'Alumni,Teacher,Admin' %}
+          <a href="{% url 'jobs:job_post_create' %}" class="btn">
+            <i class="fas fa-plus"></i> Post the First Job
+          </a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+@media (max-width: 768px) {
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(380px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+  }
+}
+</style>
+{% endblock %}

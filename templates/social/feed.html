@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Social Feed{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 2rem 1.5rem;">
+  <!-- Header -->
+  <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%); border: 2px solid rgba(99, 102, 241, 0.2);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="color: var(--primary); font-size: 2rem; font-weight: 800; margin: 0 0 0.5rem 0; display: flex; align-items: center; gap: 0.75rem;">
+          <i class="fas fa-users" style="color: var(--accent);"></i>
+          Social Feed
+        </h1>
+        <p style="color: var(--secondary); font-size: 1.1rem; margin: 0;">Connect and share with your community</p>
+      </div>
+      <a href="{% url 'social:create_post' %}" class="btn" style="padding: 1rem 2rem;">
+        <i class="fas fa-plus"></i> Create Post
+      </a>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="card" style="margin-bottom: 2rem;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+      <div style="position: relative; flex: 1; min-width: 250px;">
+        <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+        <input type="text" name="search" value="{{ request.GET.search|default:'' }}" placeholder="Search posts..." style="width: 100%; padding: 0.875rem 1rem 0.875rem 3rem; border: 2px solid rgba(99, 102, 241, 0.1); border-radius: 1rem; font-size: 1rem; background: rgba(99, 102, 241, 0.05); transition: all 0.3s; outline: none;" onfocus="this.style.borderColor='var(--accent)'; this.style.background='#fff'" onblur="this.style.borderColor='rgba(99, 102, 241, 0.1)'; this.style.background='rgba(99, 102, 241, 0.05)'">
+      </div>
+      <select name="author" style="padding: 0.875rem 1rem; border: 2px solid rgba(99, 102, 241, 0.1); border-radius: 1rem; font-size: 1rem; background: rgba(99, 102, 241, 0.05); min-width: 150px; outline: none;">
+        <option value="">All Authors</option>
+        {% for author in authors %}
+          <option value="{{ author }}" {% if request.GET.author == author %}selected{% endif %}>{{ author }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn" style="padding: 0.875rem 1.5rem;"><i class="fas fa-filter"></i> Filter</button>
+    </form>
+  </div>
+
+  <!-- Posts -->
+  <div style="display: flex; flex-direction: column; gap: 2rem;">
+    {% for post in posts %}
+      <div class="card" style="padding: 0; overflow: hidden; border: 2px solid rgba(99, 102, 241, 0.1);">
+        <!-- Post Header -->
+        <div style="padding: 1.5rem; border-bottom: 1px solid rgba(99, 102, 241, 0.1);">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="{% url 'users:profile' post.author.username %}" style="text-decoration: none;">
+              <img src="{% if post.author.profile.profile_image %}{{ post.author.profile.profile_image.url }}{% else %}{% static 'img/default_avatar.svg' %}{% endif %}" alt="{{ post.author.username }}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent);">
+            </a>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <a href="{% url 'users:profile' post.author.username %}" style="font-weight: 700; color: var(--primary); font-size: 1.1rem; text-decoration: none;">{{ post.author.get_full_name|default:post.author.username }}</a>
+                <div style="background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600;">{{ post.author.get_role_display }}</div>
+              </div>
+              <div style="color: var(--secondary); font-size: 0.9rem;">{{ post.created_at|timesince }} ago</div>
+            </div>
+            {% if user == post.author or user.is_superuser %}
+              <div style="display: flex; gap: 0.5rem;">
+                <a href="{% url 'social:edit_post' post.id %}" style="color: var(--accent); padding: 0.5rem; border-radius: 0.5rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(99, 102, 241, 0.1)'" onmouseout="this.style.background='transparent'">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <a href="{% url 'social:delete_post' post.id %}" style="color: var(--danger); padding: 0.5rem; border-radius: 0.5rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'" onmouseout="this.style.background='transparent'">
+                  <i class="fas fa-trash"></i>
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Post Content -->
+        <div style="padding: 1.5rem;">
+          <div style="color: var(--primary); font-size: 1.1rem; line-height: 1.6; margin-bottom: 1rem;">{{ post.content|linebreaks }}</div>
+          
+          {% if post.image %}
+            <div style="margin-bottom: 1rem;">
+              <img src="{{ post.image.url }}" alt="Post image" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 1rem; cursor: pointer;" onclick="openImageModal('{{ post.image.url }}')">
+            </div>
+          {% endif %}
+          
+          {% if post.pdf %}
+            <div style="margin-bottom: 1rem;">
+              <a href="{{ post.pdf.url }}" target="_blank" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.2); border-radius: 1rem; text-decoration: none; transition: all 0.3s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.15)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
+                <div style="width: 48px; height: 48px; background: var(--danger); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                  <i class="fas fa-file-pdf" style="color: white; font-size: 1.2rem;"></i>
+                </div>
+                <div>
+                  <div style="font-weight: 600; color: var(--primary);">PDF Document</div>
+                  <div style="color: var(--secondary); font-size: 0.9rem;">Click to view</div>
+                </div>
+              </a>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Post Actions -->
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid rgba(99, 102, 241, 0.1); background: rgba(99, 102, 241, 0.02);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 2rem;">
+              <form method="post" action="{% url 'social:post_like_toggle' post.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" style="background: none; border: none; display: flex; align-items: center; gap: 0.5rem; color: {% if user in post.likes.all %}var(--danger){% else %}var(--secondary){% endif %}; cursor: pointer; padding: 0.5rem; border-radius: 0.5rem; transition: all 0.3s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.1)'" onmouseout="this.style.background='transparent'">
+                  <i class="fas fa-heart"></i>
+                  <span>{{ post.total_likes }}</span>
+                </button>
+              </form>
+              <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--secondary);">
+                <i class="fas fa-comment"></i>
+                <span>{{ post.comments.count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments Section -->
+        {% if post.comments.all %}
+          <div style="padding: 1rem 1.5rem; border-top: 1px solid rgba(99, 102, 241, 0.1); background: rgba(99, 102, 241, 0.02);">
+            {% for comment in post.comments.all|slice:":3" %}
+              <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+                <img src="{% if comment.author.profile.profile_image %}{{ comment.author.profile.profile_image.url }}{% else %}{% static 'img/default_avatar.svg' %}{% endif %}" alt="{{ comment.author.username }}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+                <div style="flex: 1;">
+                  <div style="background: rgba(255, 255, 255, 0.8); padding: 0.75rem 1rem; border-radius: 1rem; margin-bottom: 0.25rem;">
+                    <div style="font-weight: 600; color: var(--primary); font-size: 0.9rem; margin-bottom: 0.25rem;">{{ comment.author.get_full_name|default:comment.author.username }}</div>
+                    <div style="color: var(--primary); font-size: 0.95rem;">{{ comment.content }}</div>
+                  </div>
+                  <div style="color: var(--secondary); font-size: 0.8rem; margin-left: 1rem;">{{ comment.created_at|timesince }} ago</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Add Comment -->
+        <div style="padding: 1rem 1.5rem; border-top: 1px solid rgba(99, 102, 241, 0.1);">
+          <form method="post" style="display: flex; gap: 1rem; align-items: center;">
+            {% csrf_token %}
+            <input type="hidden" name="comment_post_id" value="{{ post.id }}">
+            <img src="{% if user.profile.profile_image %}{{ user.profile.profile_image.url }}{% else %}{% static 'img/default_avatar.svg' %}{% endif %}" alt="{{ user.username }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+            <input type="text" name="content" placeholder="Add a comment..." required style="flex: 1; padding: 0.75rem 1rem; border: 2px solid rgba(99, 102, 241, 0.1); border-radius: 2rem; font-size: 0.95rem; background: rgba(99, 102, 241, 0.05); outline: none; transition: all 0.3s;" onfocus="this.style.borderColor='var(--accent)'; this.style.background='#fff'" onblur="this.style.borderColor='rgba(99, 102, 241, 0.1)'; this.style.background='rgba(99, 102, 241, 0.05)'">
+            <button type="submit" style="background: var(--accent); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <div style="text-align: center; padding: 4rem 2rem; color: var(--secondary);">
+        <i class="fas fa-comments" style="font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.3;"></i>
+        <h3 style="color: var(--primary); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">No Posts Yet</h3>
+        <p style="font-size: 1.1rem; margin-bottom: 2rem;">Be the first to share something with the community!</p>
+        <a href="{% url 'social:create_post' %}" class="btn">
+          <i class="fas fa-plus"></i> Create First Post
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+@media (max-width: 768px) {
+  div[style*="display: flex; align-items: center; gap: 1rem"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
+</style>
+{% endblock %}

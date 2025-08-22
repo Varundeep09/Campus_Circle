@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 2rem auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+    <h1 style="color: #06b6d4; font-size: 2rem; font-weight: bold;">Upcoming Events</h1>
+    {% if user.is_authenticated and user.role in "teacher admin" %}
+      <a href="{% url 'events:event_create' %}" class="btn" style="font-size: 1rem; padding: 0.6rem 1.5rem;">+ Create Event</a>
+    {% endif %}
+  </div>
+  <form method="get" style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; align-items: center;">
+    <input type="text" name="search" value="{{ request.GET.search|default:'' }}" placeholder="Search events..." style="flex:1; min-width:180px; padding:0.6rem 1rem; border:1px solid #e0e7ef; border-radius:0.5rem; font-size:1rem;">
+    <select name="location" style="padding:0.6rem 1rem; border:1px solid #e0e7ef; border-radius:0.5rem; font-size:1rem;">
+      <option value="">All Locations</option>
+      {% for loc in locations %}
+        <option value="{{ loc }}" {% if request.GET.location == loc %}selected{% endif %}>{{ loc }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn" style="padding:0.6rem 1.5rem; font-size:1rem;">Search</button>
+  </form>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for event in events %}
+      <div style="background: #f8fafc; border-radius: 1rem; box-shadow: 0 2px 8px rgba(6,182,212,0.07); padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <a href="{% url 'events:event_detail' event.id %}" style="color: #6366f1; font-size: 1.2rem; font-weight: 600; text-decoration: none; margin-bottom: 0.5rem;">{{ event.title }}</a>
+        <div style="color: #64748b; font-size: 1rem; margin-bottom: 0.7rem;">{{ event.event_date|date:"M d, Y H:i" }} &bull; {{ event.location }}</div>
+        <div style="display: flex; gap: 0.7rem; align-items: center;">
+          <a href="{% url 'events:event_detail' event.id %}" class="btn" style="background: #6366f1; color: #fff; font-size: 0.95rem; padding: 0.5rem 1.2rem; align-self: flex-start;">View Details</a>
+          {% if user.is_authenticated and user.is_superuser %}
+            <form action="{% url 'events:event_delete' event.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn" style="background: #e11d48; color: #fff; font-size: 0.95rem; padding: 0.5rem 1.2rem;">Delete</button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <div style="color: #888; font-size: 1.1rem;">No upcoming events.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

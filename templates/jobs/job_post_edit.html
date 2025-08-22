@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Edit Job{% endblock %}
+
+{% block content %}
+<div style="max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem;">
+  <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%); border: 2px solid rgba(99, 102, 241, 0.2);">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div style="width: 80px; height: 80px; background: var(--gradient); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);">
+        <i class="fas fa-edit" style="color: white; font-size: 2rem;"></i>
+      </div>
+      <h1 style="color: var(--primary); font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem;">Edit Job Posting</h1>
+      <p style="color: var(--secondary); font-size: 1.1rem;">Update job details and requirements</p>
+    </div>
+
+    <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+      {% csrf_token %}
+      
+      <div>
+        <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Job Title *</label>
+        {{ form.title }}
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Company *</label>
+          {{ form.company }}
+        </div>
+        <div>
+          <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Location *</label>
+          {{ form.location }}
+        </div>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Job Type *</label>
+          {{ form.job_type }}
+        </div>
+        <div>
+          <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Application Deadline *</label>
+          {{ form.application_deadline }}
+        </div>
+      </div>
+      
+      <div>
+        <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Application Link</label>
+        {{ form.application_link }}
+        <div style="font-size: 0.9rem; color: var(--secondary); margin-top: 0.5rem;">Students will be redirected to this link to apply</div>
+      </div>
+      
+      <div>
+        <label style="display: block; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Job Description *</label>
+        {{ form.description }}
+      </div>
+      
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+        <button type="submit" class="btn" style="background: var(--success); padding: 1rem 2rem; font-size: 1.1rem;">
+          <i class="fas fa-save"></i> Update Job
+        </button>
+        <a href="{% url 'jobs:job_detail' job_post.id %}" class="btn" style="background: transparent; color: var(--primary); border: 2px solid var(--primary); padding: 1rem 2rem;">
+          <i class="fas fa-times"></i> Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+form input, form select, form textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(99, 102, 241, 0.1);
+  border-radius: 1rem;
+  font-size: 1rem;
+  background: rgba(99, 102, 241, 0.05);
+  outline: none;
+  transition: all 0.3s;
+}
+
+form input:focus, form select:focus, form textarea:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+form textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+@media (max-width: 768px) {
+  div[style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
+{% endblock %}

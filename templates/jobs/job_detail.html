@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ job.title }}{% endblock %}
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem;">
+  <!-- Job Header -->
+  <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(167, 139, 250, 0.1) 100%); border: 2px solid rgba(99, 102, 241, 0.2);">
+    <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+      <div style="width: 80px; height: 80px; background: var(--gradient); border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);">
+        <i class="fas fa-briefcase" style="color: white; font-size: 2rem;"></i>
+      </div>
+      <div style="flex: 1;">
+        <h1 style="color: var(--primary); font-size: 2.5rem; font-weight: 800; margin: 0 0 0.5rem 0;">{{ job.title }}</h1>
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-building" style="color: var(--accent);"></i>
+            <span style="color: var(--primary); font-weight: 600; font-size: 1.1rem;">{{ job.company }}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-map-marker-alt" style="color: var(--success);"></i>
+            <span style="color: var(--secondary); font-weight: 500;">{{ job.location }}</span>
+          </div>
+          <div style="background: rgba(99, 102, 241, 0.1); color: var(--accent); padding: 0.5rem 1rem; border-radius: 2rem; font-weight: 600; font-size: 0.9rem;">
+            {{ job.get_job_type_display }}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+      <div style="text-align: center; padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 1rem; border: 2px solid rgba(16, 185, 129, 0.2);">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--success); margin-bottom: 0.5rem;"><i class="fas fa-calendar-alt"></i></div>
+        <div style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Application Deadline</div>
+        <div style="color: var(--secondary); font-size: 1rem; margin-top: 0.25rem;">{{ job.application_deadline|date:"M d, Y" }}</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(245, 158, 11, 0.1); border-radius: 1rem; border: 2px solid rgba(245, 158, 11, 0.2);">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--warning); margin-bottom: 0.5rem;"><i class="fas fa-clock"></i></div>
+        <div style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Posted</div>
+        <div style="color: var(--secondary); font-size: 1rem; margin-top: 0.25rem;">{{ job.created_at|timesince }} ago</div>
+      </div>
+      <div style="text-align: center; padding: 1.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 1rem; border: 2px solid rgba(99, 102, 241, 0.2);">
+        <div style="font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem;"><i class="fas fa-user-tie"></i></div>
+        <div style="color: var(--primary); font-weight: 600; font-size: 0.9rem;">Posted by</div>
+        <div style="color: var(--secondary); font-size: 1rem; margin-top: 0.25rem;">{{ job.posted_by.get_full_name|default:job.posted_by.username }}</div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+    <!-- Main Content -->
+    <div>
+      <!-- Job Description -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: var(--primary); font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+          <i class="fas fa-file-alt" style="color: var(--accent);"></i>
+          Job Description
+        </h2>
+        <div style="color: var(--primary); font-size: 1.1rem; line-height: 1.7; background: rgba(99, 102, 241, 0.05); padding: 2rem; border-radius: 1rem; border-left: 4px solid var(--accent);">
+          {{ job.description|linebreaks }}
+        </div>
+      </div>
+      
+      <!-- Requirements (if available) -->
+      {% if job.requirements %}
+      <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: var(--primary); font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+          <i class="fas fa-list-check" style="color: var(--success);"></i>
+          Requirements
+        </h2>
+        <div style="color: var(--primary); font-size: 1.1rem; line-height: 1.7; background: rgba(16, 185, 129, 0.05); padding: 2rem; border-radius: 1rem; border-left: 4px solid var(--success);">
+          {{ job.requirements|linebreaks }}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div>
+      <!-- Application Actions -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+          <i class="fas fa-rocket" style="color: var(--accent);"></i>
+          Take Action
+        </h3>
+        
+        {% if user.is_authenticated and user == job.posted_by %}
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <a href="{% url 'jobs:job_post_edit' job.id %}" class="btn" style="background: var(--success); justify-content: center;"><i class="fas fa-edit"></i> Edit Job</a>
+            <a href="{% url 'jobs:job_post_delete' job.id %}" class="btn" style="background: var(--danger); justify-content: center;"><i class="fas fa-trash"></i> Delete Job</a>
+          </div>
+        {% elif user.is_authenticated and user.role == 'student' %}
+          {% if job.application_link %}
+            <a href="{{ job.application_link }}" target="_blank" class="btn" style="width: 100%; justify-content: center; background: var(--success); font-size: 1.1rem; padding: 1rem; text-decoration: none;">
+              <i class="fas fa-external-link-alt"></i> Apply Now
+            </a>
+          {% else %}
+            <a href="https://{{ job.company|lower }}.com" target="_blank" class="btn" style="width: 100%; justify-content: center; background: var(--success); font-size: 1.1rem; padding: 1rem; text-decoration: none;">
+              <i class="fas fa-external-link-alt"></i> Apply at {{ job.company }}
+            </a>
+          {% endif %}
+          <div style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 1rem; border: 2px dashed var(--success);">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <i class="fas fa-info-circle" style="color: var(--success);"></i>
+              <span style="font-weight: 600; color: var(--primary); font-size: 0.9rem;">Application Tips</span>
+            </div>
+            <ul style="color: var(--secondary); font-size: 0.9rem; margin: 0; padding-left: 1.5rem;">
+              <li>Tailor your cover letter</li>
+              <li>Highlight relevant skills</li>
+              <li>Be concise and professional</li>
+            </ul>
+          </div>
+        {% else %}
+          <div style="text-align: center; padding: 2rem; background: rgba(99, 102, 241, 0.05); border-radius: 1rem; border: 2px dashed var(--accent);">
+            <i class="fas fa-lock" style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;"></i>
+            <div style="color: var(--primary); font-weight: 600; margin-bottom: 0.5rem;">Login Required</div>
+            <div style="color: var(--secondary); font-size: 0.9rem; margin-bottom: 1rem;">Please login as a student to apply</div>
+            <a href="{% url 'users:login' %}" class="btn" style="padding: 0.75rem 1.5rem;"><i class="fas fa-sign-in-alt"></i> Login</a>
+          </div>
+        {% endif %}
+      </div>
+      
+      <!-- Company Info -->
+      <div class="card">
+        <h3 style="color: var(--primary); font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+          <i class="fas fa-building" style="color: var(--accent);"></i>
+          About Company
+        </h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 1rem;">
+            <div style="width: 48px; height: 48px; background: var(--gradient); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              <i class="fas fa-building" style="color: white; font-size: 1.2rem;"></i>
+            </div>
+            <div>
+              <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">{{ job.company }}</div>
+              <div style="color: var(--secondary); font-size: 0.9rem;">{{ job.location }}</div>
+            </div>
+          </div>
+          <div style="color: var(--secondary); font-size: 0.9rem; text-align: center; padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 1rem;">
+            <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+            More company details coming soon
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Back Button -->
+  <div style="text-align: center; margin-top: 2rem;">
+    <a href="{% url 'jobs:job_list' %}" class="btn" style="background: transparent; color: var(--accent); border: 2px solid var(--accent); padding: 1rem 2rem;">
+      <i class="fas fa-arrow-left"></i> Back to Job Board
+    </a>
+  </div>
+</div>
+
+
+
+<style>
+@media (max-width: 768px) {
+  div[style*="grid-template-columns: 2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
+{% endblock %}

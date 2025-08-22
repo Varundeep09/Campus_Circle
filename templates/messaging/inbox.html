@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h1 style="color: var(--primary); font-size: 2rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+        <i class="fas fa-envelope" style="color: var(--accent);"></i>
+        Messages
+      </h1>
+      <a href="{% url 'messaging:new_thread' %}" class="btn" style="padding: 0.75rem 1.5rem;">
+        <i class="fas fa-plus"></i> New Chat
+      </a>
+    </div>
+    
+    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+      {% for thread in threads %}
+        <a href="{% url 'messaging:thread' thread.id %}" style="text-decoration: none; color: inherit;">
+          <div style="background: rgba(99, 102, 241, 0.05); border-radius: 1rem; padding: 1rem 1.5rem; transition: all 0.3s; border: 2px solid transparent;" onmouseover="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.borderColor='var(--accent)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.05)'; this.style.borderColor='transparent'">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div style="width: 48px; height: 48px; background: var(--gradient); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                {% for participant in thread.participants.all %}
+                  {% if participant != user %}
+                    {{ participant.username|first|upper }}
+                  {% endif %}
+                {% endfor %}
+              </div>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; color: var(--primary); font-size: 1.1rem; margin-bottom: 0.25rem;">
+                  {% for participant in thread.participants.all %}
+                    {% if participant != user %}
+                      {{ participant.get_full_name|default:participant.username }}{% if not forloop.last %}, {% endif %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <div style="color: var(--secondary); font-size: 0.9rem;">
+                  {% if thread.last_message %}
+                    {{ thread.last_message.content|truncatechars:50 }}
+                  {% else %}
+                    No messages yet
+                  {% endif %}
+                </div>
+              </div>
+              <div style="text-align: right; color: var(--secondary); font-size: 0.8rem;">
+                {% if thread.last_message %}
+                  {{ thread.last_message.created_at|timesince }} ago
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <div style="text-align: center; padding: 3rem; color: var(--secondary);">
+          <i class="fas fa-inbox" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">No conversations yet</h3>
+          <p style="margin-bottom: 2rem;">Start chatting with your classmates and colleagues!</p>
+          <a href="{% url 'messaging:new_thread' %}" class="btn">
+            <i class="fas fa-plus"></i> Start New Conversation
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
